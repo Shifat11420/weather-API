@@ -60,6 +60,9 @@ class WeatherStatisticsViewSet(viewsets.ModelViewSet):
 
 
 class WeatheranalysisView(APIView):
+    """
+    Generates weather/stats. The calculations are performed and saved in the database (WeatherStatistics).
+    """
     @ classmethod
     def get_extra_actions(cls):
         return []
@@ -101,6 +104,9 @@ class WeatheranalysisView(APIView):
 
 
 class WeatheringectView(APIView):
+    """
+    Ingest the data into the database (WeatherData). Logs are also calculated and saved in the database (WeatherLog).
+    """
     @ classmethod
     def get_extra_actions(cls):
         return []
