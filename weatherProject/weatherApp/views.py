@@ -1,4 +1,3 @@
-# from django.contrib.auth.models import User, Group
 import os
 import time
 from datetime import datetime

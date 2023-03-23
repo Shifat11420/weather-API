@@ -2,6 +2,9 @@ from django.db import models
 
 
 class WeatherData(models.Model):
+    """
+    Model for storing all the weather data
+    """
     stationID = models.CharField(max_length=20)
     date = models.DateField()
     year = models.IntegerField()
@@ -16,6 +19,9 @@ class WeatherData(models.Model):
 
 
 class WeatherLog(models.Model):
+    """
+    Model for storing all the weather data logs, for each file/station
+    """
     stationID = models.CharField(max_length=20)
     startTime = models.CharField(max_length=50)
     endTime = models.CharField(max_length=50)
@@ -26,6 +32,9 @@ class WeatherLog(models.Model):
 
 
 class WeatherStatistics(models.Model):
+    """
+    Model for storing all the weather calculation for each file/station, for each year
+    """
     stationID = models.CharField(max_length=20)
     year = models.IntegerField()
     avgMaxTemperature = models.FloatField(null=True, blank=True, default=None)
