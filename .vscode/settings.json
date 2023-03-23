@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./weatherProject/weatherApp",
+        "./weatherProject/weatherApp",
+        "./weatherProject/weatherApp"
+    ]
+}
