@@ -79,12 +79,6 @@ class WeatheranalysisView(APIView):
 
         dataList = []
         for item in queryset.iterator():
-
-            # Duplicate check in data ingecting
-            if WeatherStatistics.objects.filter(
-                    Q(stationID=item['stationID']), Q(year=item['year'])):
-                continue
-
             # average temperatures are divided by 10
             # to convert from "in tenth degree Celsius" to "degree Celsius" and
             # total precipitation is divided by 10 to convert from "Millimeters"
@@ -97,7 +91,7 @@ class WeatheranalysisView(APIView):
                     "avgMinTemperature": round((item['avgminTemp']/10), 3),
                     "totalPrecipitation_cm": round((item['totalPrecip']/10), 3)}
             dataList.append(WeatherStatistics(**data))
-        WeatherStatistics.objects.bulk_create(dataList)
+        WeatherStatistics.objects.bulk_create(dataList, ignore_conflicts=True)
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)
 
@@ -111,10 +105,9 @@ class WeatheringectView(APIView):
         return []
 
     def get(self, request, format=None):
-        # path = r"F:\weatherAPI\weatherProject\data\sampleData"
-
         path = os.path.join(DATAFILES_FOLDER, "data\wx_data")
         os.chdir(path)
+        datalogList = []
         for file in os.listdir():
             filename = file.split(".txt")
             if file.endswith('.txt'):
@@ -136,11 +129,6 @@ class WeatheringectView(APIView):
                         minTempL = int(fieldvalue[2])
                         precipitationL = int(fieldvalue[3])
 
-                        # Duplicate check in data ingecting
-                        if WeatherData.objects.filter(Q(stationID=filename[0]),
-                                                      Q(date=dateL)):
-                            continue
-
                         data = {"stationID": filename[0],
                                 "date": dateL,
                                 "year": yearL,
@@ -150,16 +138,15 @@ class WeatheringectView(APIView):
                                 "minTemperature": minTempL,
                                 "precipitation_mm": precipitationL}
                         dataList.append(WeatherData(**data))
-                    WeatherData.objects.bulk_create(dataList)
-                    # Duplicate check in log file
-                    if WeatherLog.objects.filter(Q(stationID=filename[0])):
-                        continue
+                    WeatherData.objects.bulk_create(
+                        dataList, ignore_conflicts=True)
 
-                    q = WeatherLog(stationID=filename[0],
-                                   startTime=str(startTimeL),
-                                   endTime=str(time.time()),
-                                   numberOfRecords=count)
-                    q.save()
-
+                    datalog = {"stationID": filename[0],
+                               "startTime": str(startTimeL),
+                               "endTime": str(time.time()),
+                               "numberOfRecords": count}
+                    datalogList.append(WeatherLog(**datalog))
+        WeatherLog.objects.bulk_create(
+            datalogList, ignore_conflicts=True)
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)

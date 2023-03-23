@@ -14,6 +14,12 @@ class WeatherData(models.Model):
     minTemperature = models.IntegerField()
     precipitation_mm = models.IntegerField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['stationID', 'date'],
+                                    name='unique_stationID_date')
+        ]
+
     def __str__(self):
         return str(self.stationID)+" "+str(self.date)
 
@@ -26,6 +32,12 @@ class WeatherLog(models.Model):
     startTime = models.CharField(max_length=50)
     endTime = models.CharField(max_length=50)
     numberOfRecords = models.IntegerField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['stationID'],
+                                    name='unique_stationID')
+        ]
 
     def __str__(self):
         return str(self.stationID)+" "+str(self.numberOfRecords)
@@ -41,6 +53,12 @@ class WeatherStatistics(models.Model):
     avgMinTemperature = models.FloatField(null=True, blank=True, default=None)
     totalPrecipitation_cm = models.FloatField(
         null=True, blank=True, default=None)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['stationID', 'year'],
+                                    name='unique_stationID_year')
+        ]
 
     def __str__(self):
         return str(self.stationID)+" "+str(self.year)
