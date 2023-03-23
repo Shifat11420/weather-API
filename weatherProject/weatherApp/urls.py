@@ -17,10 +17,10 @@ schema_view = swagger_get_schema_view(
 
 router = routers.DefaultRouter()
 
+router.register(r'api/weather/stats',
+                views.WeatherStatisticsViewSet, 'stats')
 router.register(r'api/weather', views.WeatherDataViewSet)
 router.register(r'api/weatherlog', views.WeatherLogViewSet)
-router.register(r'api/weather/stats/',
-                views.WeatherStatisticsViewSet, 'stats')
 
 
 # Wire up our API using automatic URL routing.
@@ -33,3 +33,5 @@ urlpatterns = [
     path('api/v1/swagger/schema/', schema_view.with_ui('swagger',
                                                        cache_timeout=0), name="swagger-schema"),
 ]
+
+urlpatterns += router.urls
