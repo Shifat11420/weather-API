@@ -3,6 +3,9 @@ from .models import WeatherData, WeatherLog, WeatherStatistics
 
 
 class TestWeatherData(APITestCase):
+    """
+    Unit testing for /api/weather endpoint
+    """
     url = "/api/weather/"
 
     def setUp(self):
@@ -21,6 +24,9 @@ class TestWeatherData(APITestCase):
 
 
 class TestWeatherLog(APITestCase):
+    """
+    Unit testing for /api/weather/log endpoint
+    """
     url = "/api/weather/log/"
 
     def setUp(self):
@@ -40,6 +46,9 @@ class TestWeatherLog(APITestCase):
 
 
 class TestWeatherStatistics(APITestCase):
+    """
+    Unit testing for /api/weather/stats endpoint
+    """
     url = "/api/weather/stats/"
 
     def setUp(self):

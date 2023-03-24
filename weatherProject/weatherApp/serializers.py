@@ -5,21 +5,28 @@ from rest_framework.response import Response
 
 
 class WeatherDataSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for weather data
+    """
     class Meta:
         model = WeatherData
         fields = ["id", 'stationID', 'date', 'year', 'month', 'day',
                   'maxTemperature', 'minTemperature', 'precipitation_mm']
-        read_only_fields = fields
 
 
 class WeatherLogSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for weather data log
+    """
     class Meta:
         model = WeatherLog
         fields = ["id", 'stationID', 'startTime', 'endTime', 'numberOfRecords']
-        read_only_fields = fields
 
 
 class WeatherStatisticsSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for weather data statistics
+    """
     class Meta:
         model = WeatherStatistics
         fields = ["id", 'stationID', 'year', 'avgMaxTemperature', 'avgMinTemperature',

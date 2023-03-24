@@ -15,6 +15,9 @@ class WeatherData(models.Model):
     precipitation_mm = models.IntegerField()   # data in tenth of mm
 
     class Meta:
+        """
+        For duplicate check on data entry UniqueConstraint() is used for unique fields stationID and date
+        """
         constraints = [
             models.UniqueConstraint(fields=['stationID', 'date'],
                                     name='unique_stationID_date')
@@ -34,6 +37,9 @@ class WeatherLog(models.Model):
     numberOfRecords = models.IntegerField()
 
     class Meta:
+        """
+        For duplicate check on data entry UniqueConstraint() is used for unique field stationID
+        """
         constraints = [
             models.UniqueConstraint(fields=['stationID'],
                                     name='unique_stationID')
@@ -49,12 +55,17 @@ class WeatherStatistics(models.Model):
     """
     stationID = models.CharField(max_length=20)
     year = models.IntegerField()
-    avgMaxTemperature = models.FloatField(null=True, blank=True, default=None)
-    avgMinTemperature = models.FloatField(null=True, blank=True, default=None)
+    avgMaxTemperature = models.FloatField(
+        null=True, blank=True, default=None)    # data in degree celcious
+    avgMinTemperature = models.FloatField(
+        null=True, blank=True, default=None)    # data in degree celcious
     totalPrecipitation_cm = models.FloatField(
-        null=True, blank=True, default=None)
+        null=True, blank=True, default=None)    # data in centimeters
 
     class Meta:
+        """
+        For duplicate check on data entry UniqueConstraint() is used for unique fields stationID and year
+        """
         constraints = [
             models.UniqueConstraint(fields=['stationID', 'year'],
                                     name='unique_stationID_year')

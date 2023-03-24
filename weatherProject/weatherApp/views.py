@@ -60,7 +60,7 @@ class WeatherStatisticsViewSet(viewsets.ModelViewSet):
 
 class WeatheranalysisView(APIView):
     """
-    Generates weather/stats. The calculations are performed and saved in the database (WeatherStatistics).
+    Calculates weather data statistics when requested from /weather/stats url. The calculations are performed and saved in the database (WeatherStatistics).
     """
     @ classmethod
     def get_extra_actions(cls):
@@ -96,17 +96,18 @@ class WeatheranalysisView(APIView):
                     "totalPrecipitation_cm": round((item['totalPrecip']/100), 3)}
             dataList.append(WeatherStatistics(**data))
 
-            # calculated data is ingested using bulk_cereate to handle large data
-            # ignore_conflicts = True is used to handlle error thrown for duplicate check
-            # from UniqueConstraints used in the model
+        # calculated data is ingested using bulk_cereate to handle large data
+        # ignore_conflicts = True is used to handlle error thrown for duplicate check
+        # from UniqueConstraints used in the model
         WeatherStatistics.objects.bulk_create(dataList, ignore_conflicts=True)
+
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)
 
 
 class WeatheringestView(APIView):
     """
-    Ingest the data into the database (WeatherData). Logs are also calculated and saved in the database (WeatherLog).
+    Ingests the data into the database (WeatherData) and produces log information and stores in the database (WeatherLog) when requested from /weather/calc url.
     """
     @ classmethod
     def get_extra_actions(cls):
@@ -117,8 +118,10 @@ class WeatheringestView(APIView):
         os.chdir(path)
         datalogList = []
         for file in os.listdir():
+
             # filename is used as stationID for each station
             filename = file.split(".txt")
+
             if file.endswith('.txt'):
                 file_path = f"{path}/{file}"
                 with open(file_path, 'r') as file:
@@ -129,8 +132,11 @@ class WeatheringestView(APIView):
                         count += 1
                         line = line.strip()
                         fieldvalue = line.split("\t")
+
+                        # convert date string to date form YYYY-MM-DD
                         dateL = datetime.strptime(
                             fieldvalue[0], '%Y%m%d').strftime('%Y-%m-%d')
+
                         yearL = int(fieldvalue[0][0:4])
                         monthL = int(fieldvalue[0][4:6])
                         dayL = int(fieldvalue[0][6:8])
@@ -138,6 +144,7 @@ class WeatheringestView(APIView):
                         minTempL = int(fieldvalue[2])
                         precipitationL = int(fieldvalue[3])
 
+                        # for data ingestion in WeatherData
                         data = {"stationID": filename[0],
                                 "date": dateL,
                                 "year": yearL,
@@ -154,6 +161,7 @@ class WeatheringestView(APIView):
                     WeatherData.objects.bulk_create(
                         dataList, ignore_conflicts=True)
 
+                    # for calculating logs from data and storing in WeatherLog
                     datalog = {"stationID": filename[0],
                                "startTime": str(startTimeL),
                                "endTime": str(time.time()),
@@ -161,5 +169,6 @@ class WeatheringestView(APIView):
                     datalogList.append(WeatherLog(**datalog))
         WeatherLog.objects.bulk_create(
             datalogList, ignore_conflicts=True)
+
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)

@@ -1,11 +1,10 @@
 from django.urls import include, path
 from rest_framework import routers
 from . import views
-
-
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view as swagger_get_schema_view
 
+# Automatic documentation with swagger
 schema_view = swagger_get_schema_view(
     openapi.Info(
         title="Weather API",
