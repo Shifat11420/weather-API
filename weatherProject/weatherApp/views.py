@@ -67,7 +67,10 @@ class WeatheranalysisView(APIView):
         return []
 
     def get(self, request, format=None):
-
+        # for every station and for every year
+        # calculate averages for minimum and maximum temperatures
+        # calculate total precipitation
+        # exclude() function ignores missing data
         queryset = WeatherData.objects.values(
             'stationID', 'year').distinct().exclude(
             maxTemperature=-9999).exclude(
@@ -79,24 +82,29 @@ class WeatheranalysisView(APIView):
 
         dataList = []
         for item in queryset.iterator():
+            # unit conversion
             # average temperatures are divided by 10
             # to convert from "in tenth degree Celsius" to "degree Celsius" and
-            # total precipitation is divided by 10 to convert from "Millimeters"
-            # to "Centimeters"
-            # values roounded upto 3 decimal places
+            # total precipitation is divided by 100 to convert from tenth of "Millimeters"
+            # to "Centimeters", 1mm = 0.1cm, 0.1mm = 0.01cm
+            # all values are roounded upto 3 decimal places
 
             data = {"stationID": item['stationID'],
                     "year": item['year'],
                     "avgMaxTemperature": round((item['avgmaxTemp']/10), 3),
                     "avgMinTemperature": round((item['avgminTemp']/10), 3),
-                    "totalPrecipitation_cm": round((item['totalPrecip']/10), 3)}
+                    "totalPrecipitation_cm": round((item['totalPrecip']/100), 3)}
             dataList.append(WeatherStatistics(**data))
+
+            # calculated data is ingested using bulk_cereate to handle large data
+            # ignore_conflicts = True is used to handlle error thrown for duplicate check
+            # from UniqueConstraints used in the model
         WeatherStatistics.objects.bulk_create(dataList, ignore_conflicts=True)
         return Response({"status": "success"},
                         status.HTTP_201_CREATED)
 
 
-class WeatheringectView(APIView):
+class WeatheringestView(APIView):
     """
     Ingest the data into the database (WeatherData). Logs are also calculated and saved in the database (WeatherLog).
     """
@@ -109,6 +117,7 @@ class WeatheringectView(APIView):
         os.chdir(path)
         datalogList = []
         for file in os.listdir():
+            # filename is used as stationID for each station
             filename = file.split(".txt")
             if file.endswith('.txt'):
                 file_path = f"{path}/{file}"
@@ -138,6 +147,10 @@ class WeatheringectView(APIView):
                                 "minTemperature": minTempL,
                                 "precipitation_mm": precipitationL}
                         dataList.append(WeatherData(**data))
+
+                    # calculated data is ingested using bulk_cereate to handle large data
+                    # ignore_conflicts = True is used to handlle errors thrown for duplicate check
+                    # from UniqueConstraint() used in the model
                     WeatherData.objects.bulk_create(
                         dataList, ignore_conflicts=True)
 

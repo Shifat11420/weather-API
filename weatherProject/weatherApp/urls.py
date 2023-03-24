@@ -19,8 +19,8 @@ router = routers.DefaultRouter()
 
 router.register(r'api/weather/stats',
                 views.WeatherStatisticsViewSet, 'stats')
+router.register(r'api/weather/log', views.WeatherLogViewSet)
 router.register(r'api/weather', views.WeatherDataViewSet)
-router.register(r'api/weatherlog', views.WeatherLogViewSet)
 
 
 # Wire up our API using automatic URL routing.
@@ -29,7 +29,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('weather/calc/', views.WeatheranalysisView.as_view(), name='calc'),
-    path('weather/ingectdata/', views.WeatheringectView.as_view(), name='ingect'),
+    path('weather/ingestdata/', views.WeatheringestView.as_view(), name='ingest'),
     path('api/v1/swagger/schema/', schema_view.with_ui('swagger',
                                                        cache_timeout=0), name="swagger-schema"),
 ]

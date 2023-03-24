@@ -10,9 +10,9 @@ class WeatherData(models.Model):
     year = models.IntegerField()
     month = models.IntegerField()
     day = models.IntegerField()
-    maxTemperature = models.IntegerField()
-    minTemperature = models.IntegerField()
-    precipitation_mm = models.IntegerField()
+    maxTemperature = models.IntegerField()     # data in tenth of deg C
+    minTemperature = models.IntegerField()     # data in tenth of deg C
+    precipitation_mm = models.IntegerField()   # data in tenth of mm
 
     class Meta:
         constraints = [
